@@ -1,16 +1,11 @@
 package ru.movie.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder(toBuilder = true)
-public class Movie {
-
+public class MovieUpdateCommand {
     private Long id;
     private String title;
     private String genre;

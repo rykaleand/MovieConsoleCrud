@@ -10,17 +10,17 @@ import ru.movie.console.CommandProcessor;
 import java.util.Scanner;
 
 @Configuration
+@RequiredArgsConstructor
 public class ConsoleConfig {
 
-    @Autowired
-    private CommandProcessor commandProcessor;
+    private final CommandProcessor commandProcessor;
 
     @Bean
     public CommandLineRunner commandScanner() {
         return args -> {
-            try (Scanner scanner = new Scanner(System.in)) {
+            try (var scanner = new java.util.Scanner(System.in)) {
                 System.out.println("Enter command. 'exit' to quit.");
-                System.out.println("Commands: create <id> <title> <genre> <year>");
+                System.out.println("Commands: create <title> <genre> <year>");
                 System.out.println("          find <id>");
                 System.out.println("          update <id> <title> <genre> <year>");
                 System.out.println("          delete <id>");

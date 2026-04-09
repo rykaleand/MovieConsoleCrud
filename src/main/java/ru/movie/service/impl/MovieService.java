@@ -4,7 +4,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.movie.console.mapper.MovieMapper;
 import ru.movie.entity.Movie;
+import ru.movie.entity.MovieCreateCommand;
+import ru.movie.entity.MovieUpdateCommand;
 import ru.movie.exception.MovieNotFoundException;
 import ru.movie.repository.impl.MovieRepository;
 import ru.movie.service.MovieApi;
@@ -16,6 +19,7 @@ import java.util.List;
 public class MovieService implements MovieApi {
 
     private final MovieRepository movieRepository;
+    private final MovieMapper movieMapper;
 
     @Value("${app.name}")
     private String appName;
@@ -30,42 +34,24 @@ public class MovieService implements MovieApi {
     }
 
     @Override
-    public void createMovie(Long id, String title, String genre, Integer releaseYear) {
-        Movie movie = new Movie().toBuilder()
-                .id(id)
-                .title(title)
-                .genre(genre)
-                .releaseYear(releaseYear)
-                .build();
-        movieRepository.create(movie);
+    public void createMovie(MovieCreateCommand command) {
+        movieRepository.create(movieMapper.toEntity(command));
     }
 
     @Override
     public Movie findById(Long id) {
-        try {
-            /** По-хорошему нужно писать хендлер (advice-controller), который ловит бизнес-ошибки,
-                но в учебных целях мной был выбран более простой вариант */
-            return movieRepository.findById(id).orElseThrow(() ->
-                    new MovieNotFoundException(id));
-        } catch (MovieNotFoundException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+    }
+
+    @Override
+    public void updateMovie(MovieUpdateCommand command) {
+        movieRepository.update(movieMapper.toEntity(command));
     }
 
     @Override
     public void deleteById(Long id) {
         movieRepository.deleteById(id);
-    }
-
-    @Override
-    public void updateMovie(Long id, String title, String genre, Integer releaseYear) {
-        Movie movie = new Movie();
-        movie.setId(id);
-        movie.setTitle(title);
-        movie.setGenre(genre);
-        movie.setReleaseYear(releaseYear);
-        movieRepository.update(movie);
     }
 
     @Override

@@ -7,15 +7,18 @@ import ru.movie.repository.CrudRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @RequiredArgsConstructor
 public class MovieRepository implements CrudRepository<Movie, Long> {
 
     private final List<Movie> movieContainer;
+    private final AtomicLong idSequence = new AtomicLong(1);
 
     @Override
     public void create(Movie movie) {
+        movie.setId(idSequence.getAndIncrement());
         movieContainer.add(movie);
     }
 
