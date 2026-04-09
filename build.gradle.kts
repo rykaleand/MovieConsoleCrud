@@ -1,8 +1,10 @@
 plugins {
     id("java")
+    id("org.springframework.boot") version "3.2.0"
+    id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "ru.unosoft"
+group = "ru.movie"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -10,14 +12,19 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    implementation(libs.spring.boot.starter)
-    implementation(libs.spring.boot.actuator)
+    // PostgreSQL
+    runtimeOnly("org.postgresql:postgresql")
 
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    // Tests
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.test {
