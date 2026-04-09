@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/cinema_db
+    url: jdbc:postgresql://localhost:5432/cinema_db
     username: postgres
-    password: postgres
+    password: password
   jpa:
     properties:
       hibernate:
