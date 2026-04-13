@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import ru.movie.entity.Director;
 import ru.movie.entity.Movie;
 import ru.movie.entity.Review;
@@ -16,6 +17,7 @@ import ru.movie.service.ReviewApi;
 
 import java.util.Optional;
 
+@Transactional
 @SpringBootTest
 class ReviewServiceTest {
 

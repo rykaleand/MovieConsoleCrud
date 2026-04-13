@@ -3,6 +3,7 @@ package ru.movie.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,4 +27,13 @@ public class Genre {
 
     @ManyToMany(mappedBy = "genres")
     private Set<Movie> movies = new HashSet<>();
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 }
