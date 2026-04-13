@@ -1,16 +1,13 @@
 package ru.movie.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ru.movie.entity.Movie;
 import ru.movie.entity.Review;
 import ru.movie.entity.User;
 import ru.movie.exception.MovieNotFoundException;
+import ru.movie.exception.UserNotFoundException;
 import ru.movie.repository.MovieRepository;
 import ru.movie.repository.ReviewRepository;
 import ru.movie.repository.UserRepository;
@@ -26,6 +23,13 @@ public class ReviewService implements ReviewApi {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Создаёт отзыв на фильм от пользователя
+     * @param movieId id фильма
+     * @param userId  id пользователя
+     * @param rating  оценка
+     * @param content текст отзыва
+     */
     @Override
     @Transactional
     public void createReview(Long movieId, Long userId, Integer rating, String content) {
@@ -33,7 +37,7 @@ public class ReviewService implements ReviewApi {
                 .orElseThrow(() -> new MovieNotFoundException(movieId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MovieNotFoundException(movieId));
+                .orElseThrow(() -> new UserNotFoundException(userId)); // был movieId — баг
 
         Review review = Review.builder()
                 .movie(movie)
@@ -46,11 +50,15 @@ public class ReviewService implements ReviewApi {
         reviewRepository.save(review);
     }
 
+    /**
+     * Удаляет пользователя вместе со всеми его отзывами
+     * @param userId id пользователя
+     */
     @Override
     @Transactional
     public void deleteUserWithReviews(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(userId)); // был RuntimeException
 
         reviewRepository.deleteAll(user.getReviews());
         userRepository.delete(user);

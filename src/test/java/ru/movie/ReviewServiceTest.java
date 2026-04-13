@@ -9,6 +9,7 @@ import ru.movie.entity.Director;
 import ru.movie.entity.Movie;
 import ru.movie.entity.Review;
 import ru.movie.entity.User;
+import ru.movie.exception.UserNotFoundException;
 import ru.movie.repository.DirectorRepository;
 import ru.movie.repository.MovieRepository;
 import ru.movie.repository.ReviewRepository;
@@ -56,7 +57,7 @@ class ReviewServiceTest {
         User user = User.builder()
                 .username("testuser")
                 .email("test@test.com")
-                .passwordHash("hash123")
+                .password("hash123") // переименовали поле
                 .build();
         userRepository.save(user);
 
@@ -71,7 +72,7 @@ class ReviewServiceTest {
         User user = User.builder()
                 .username("testuser2")
                 .email("test2@test.com")
-                .passwordHash("hash123")
+                .password("hash123")
                 .build();
         userRepository.save(user);
 
@@ -100,15 +101,21 @@ class ReviewServiceTest {
         User user = User.builder()
                 .username("testuser3")
                 .email("test3@test.com")
-                .passwordHash("hash123")
+                .password("hash123")
                 .build();
         userRepository.save(user);
 
         reviewApi.createReview(movie.getId(), user.getId(), 9, "Great movie");
-
         reviewApi.deleteUserWithReviews(user.getId());
 
         Optional<User> deletedUser = userRepository.findById(user.getId());
         Assertions.assertTrue(deletedUser.isEmpty());
+    }
+
+    @Test
+    void testDeleteUserWithReviewsRollbackWhenUserNotFound() {
+        Assertions.assertThrows(UserNotFoundException.class, () ->
+                reviewApi.deleteUserWithReviews(999999L)
+        );
     }
 }
