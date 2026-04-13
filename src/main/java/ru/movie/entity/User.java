@@ -2,6 +2,7 @@ package ru.movie.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.movie.entity.enums.Role;
 
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class User {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews;
