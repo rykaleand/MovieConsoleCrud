@@ -36,9 +36,19 @@ dependencies {
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-
+    
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // Mockito
+    testImplementation("org.mockito:mockito-core:5.3.1")
+
+    // RestAssured
+    testImplementation("io.rest-assured:rest-assured:5.5.1")
+
+    // Selenium
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.10.0")
+    testImplementation("io.github.bonigarcia:webdrivermanager:5.5.3")
 }
 
 tasks.test {

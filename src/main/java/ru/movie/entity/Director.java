@@ -1,5 +1,6 @@
 package ru.movie.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,6 @@ public class Director {
     private Integer birthYear;
 
     @OneToMany(mappedBy = "director")
+    @JsonIgnore
     private List<Movie> movies;
 }

@@ -3,6 +3,7 @@ package ru.movie.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.movie.entity.User;
 import ru.movie.entity.enums.Role;
 import ru.movie.exception.UserAlreadyExistsException;
@@ -10,6 +11,7 @@ import ru.movie.repository.UserRepository;
 import ru.movie.service.UserApi;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService implements UserApi {
 
