@@ -30,10 +30,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/view/movies", true)
-                        .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")
