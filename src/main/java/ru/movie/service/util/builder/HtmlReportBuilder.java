@@ -39,6 +39,21 @@ public class HtmlReportBuilder {
     }
 
     /**
+     * Экранирует спецсимволы HTML для предотвращения XSS атак
+     * @param input строка для экранирования
+     * @return экранированная строка
+     */
+    private String escapeHtml(String input) {
+        if (input == null) return "";
+        return input
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
+    }
+
+    /**
      * Добавляет секцию с информацией о пользователях
      * @param sb        строковый буфер
      * @param userCount количество пользователей
@@ -66,7 +81,7 @@ public class HtmlReportBuilder {
         for (Movie movie : movies) {
             sb.append("<tr>")
                     .append("<td>").append(movie.getId()).append("</td>")
-                    .append("<td>").append(movie.getTitle()).append("</td>")
+                    .append("<td>").append(escapeHtml(movie.getTitle())).append("</td>")
                     .append("<td>").append(movie.getReleaseYear()).append("</td>")
                     .append("<td>").append(movie.getDuration()).append("</td>")
                     .append("</tr>");

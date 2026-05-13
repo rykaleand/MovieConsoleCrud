@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ReportService implements ReportApi {
 
@@ -35,6 +34,7 @@ public class ReportService implements ReportApi {
      * @return id созданного отчёта
      */
     @Override
+    @Transactional
     public Long createReport() {
         Report report = Report.builder()
                 .status(ReportStatus.CREATED)
@@ -46,9 +46,10 @@ public class ReportService implements ReportApi {
      * Возвращает содержимое отчёта по его id
      * @param id id отчёта
      * @return содержимое отчёта
-     * @throws RuntimeException если отчёт не найден
+     * @throws ReportNotFoundException если отчёт не найден
      */
     @Override
+    @Transactional(readOnly = true)
     public String getReport(Long id) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new ReportNotFoundException(id));
@@ -73,39 +74,30 @@ public class ReportService implements ReportApi {
             try {
                 long totalStart = System.currentTimeMillis();
 
-                // Поток 1 — подсчёт пользователей
-                AtomicLong userCount = new AtomicLong();
-                AtomicLong userTime = new AtomicLong();
+                // Задача 1 — подсчёт пользователей
+                long userStart = System.currentTimeMillis();
+                CompletableFuture<Long> userCountFuture = CompletableFuture.supplyAsync(
+                        userRepository::count
+                );
 
-                Thread userThread = new Thread(() -> {
-                    long start = System.currentTimeMillis();
-                    userCount.set(userRepository.count());
-                    userTime.set(System.currentTimeMillis() - start);
-                });
+                // Задача 2 — получение списка фильмов
+                long movieStart = System.currentTimeMillis();
+                CompletableFuture<Iterable<Movie>> moviesFuture = CompletableFuture.supplyAsync(
+                        () -> (Iterable<Movie>) movieRepository.findAll()
+                );
 
-                // Поток 2 — получение списка фильмов
-                AtomicReference<Iterable<Movie>> movies = new AtomicReference<>();
-                AtomicLong movieTime = new AtomicLong();
+                // Ждём оба результата
+                CompletableFuture.allOf(userCountFuture, moviesFuture).join();
 
-                Thread movieThread = new Thread(() -> {
-                    long start = System.currentTimeMillis();
-                    movies.set((Iterable<Movie>) movieRepository.findAll());
-                    movieTime.set(System.currentTimeMillis() - start);
-                });
-
-                userThread.start();
-                movieThread.start();
-
-                userThread.join();
-                movieThread.join();
-
+                long userTime = System.currentTimeMillis() - userStart;
+                long movieTime = System.currentTimeMillis() - movieStart;
                 long totalTime = System.currentTimeMillis() - totalStart;
 
                 String content = htmlReportBuilder.build(
-                        userCount.get(),
-                        userTime.get(),
-                        movies.get(),
-                        movieTime.get(),
+                        userCountFuture.get(),
+                        userTime,
+                        moviesFuture.get(),
+                        movieTime,
                         totalTime
                 );
 

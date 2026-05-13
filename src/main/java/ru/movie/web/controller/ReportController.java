@@ -31,6 +31,9 @@ public class ReportController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<String> getReport(@PathVariable Long id) {
-        return ResponseEntity.ok(reportApi.getReport(id));
+        String content = reportApi.getReport(id);
+        return ResponseEntity.ok()
+                .contentType(org.springframework.http.MediaType.TEXT_HTML)
+                .body(content);
     }
 }
