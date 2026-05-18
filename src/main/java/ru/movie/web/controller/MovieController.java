@@ -1,11 +1,11 @@
 package ru.movie.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.movie.dao.MovieRepositoryCustom;
 import ru.movie.entity.Movie;
-import ru.movie.exception.MovieNotFoundException;
-import ru.movie.repository.MovieRepository;
+import ru.movie.service.MovieApi;
 
 import java.util.List;
 
@@ -14,8 +14,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieRepositoryCustom movieRepositoryCustom;
-    private final MovieRepository movieRepository;
+    private final MovieApi movieApi;
+
+    @PostMapping
+    public ResponseEntity<Movie> save(@RequestBody Movie movie) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(movieApi.save(movie));
+    }
 
     @GetMapping("/by-year-and-duration")
     public List<Movie> findByReleaseYearAndDuration(
@@ -23,19 +27,18 @@ public class MovieController {
             @RequestParam Integer durationMin,
             @RequestParam Integer durationMax
     ) {
-        return movieRepositoryCustom.findByReleaseYearAndDurationBetween(releaseYear, durationMin, durationMax);
+        return movieApi.findByReleaseYearAndDuration(releaseYear, durationMin, durationMax);
     }
 
     @GetMapping("/{id}")
     public Movie getById(@PathVariable Long id) {
-        return movieRepository.findById(id)
-                .orElseThrow(() -> new MovieNotFoundException(id));
+        return movieApi.getById(id);
     }
 
     @GetMapping("/by-director")
     public List<Movie> findByDirectorLastName(
             @RequestParam String lastName
     ) {
-        return movieRepositoryCustom.findByDirectorLastName(lastName);
+        return movieApi.findByDirectorLastName(lastName);
     }
 }
